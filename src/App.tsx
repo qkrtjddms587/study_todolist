@@ -1,8 +1,9 @@
 import { useState } from "react";
 import ToDoList from "./components/ToDoList";
-import { createGlobalStyle, styled } from "styled-components";
+import { ITheme, ThemeProvider, createGlobalStyle } from "styled-components";
 import ModeButton from "./components/ModeButton";
 import ThemeButton from "./components/ThemeButton";
+import { defaultTheme } from "./styles/theme";
 
 const GlobalStyle = createGlobalStyle<{ $isDark: boolean }>`
     html, body, div, span, applet, object, iframe,
@@ -62,16 +63,18 @@ input {
 
 function App() {
   const [isDark, setIsDark] = useState(true);
-  const [theme, setTheme] = useState("navy");
+  const [theme, setTheme] = useState<ITheme>(defaultTheme);
   const toggleMode = () => {
     setIsDark(!isDark);
   };
   return (
     <>
-      <GlobalStyle $isDark={isDark} />
-      <ThemeButton isDark={isDark} />
-      <ModeButton isDark={isDark} onClick={toggleMode} />
-      <ToDoList isDark={isDark} />
+      <ThemeProvider theme={theme}>
+        <GlobalStyle $isDark={isDark} />
+        <ThemeButton isDark={isDark} theme={theme} setTheme={setTheme} />
+        <ModeButton isDark={isDark} onClick={toggleMode} />
+        <ToDoList isDark={isDark} />
+      </ThemeProvider>
     </>
   );
 }

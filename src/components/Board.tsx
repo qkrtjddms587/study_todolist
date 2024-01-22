@@ -14,9 +14,6 @@ const Wrapper = styled.div<{ $isDark: boolean }>`
   border-radius: 10px;
   background-color: ${(props) => props.theme.boardColor};
   margin: 20px 0;
-  border: 1px solid
-    ${(props) =>
-      props.$isDark ? props.theme.bgColor.dark : props.theme.bgColor.light};
   box-shadow: 3px 3px 1px 1px ${(props) => props.theme.shadowColor};
 `;
 

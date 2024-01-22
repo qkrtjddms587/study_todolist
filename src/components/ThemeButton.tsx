@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { css, keyframes, styled } from "styled-components";
+import { ITheme, css, keyframes, styled } from "styled-components";
+import { colors } from "../styles/theme";
 
 interface IThemeButton {
   isDark: boolean;
+  setTheme: Function;
+  theme: ITheme;
 }
 
 const openThemeAnimation = keyframes`
@@ -68,29 +71,36 @@ const Theme = styled.div<{ $isDark: boolean }>`
   }
 `;
 
-const ThemeElement = styled.div`
-  width: 90%;
-  height: 90%;
+const ThemeElement = styled.div<{ color: string; theme: ITheme }>`
+  width: ${(props) =>
+    props.theme.boardColor === props.color ? "90%" : "100%"};
+  aspect-ratio: 1;
   border-radius: 50%;
-  background-color: ${(props) => props.theme.boardColor};
+  background-color: ${(props) => props.color};
 `;
 
-function ThemeButton({ isDark }: IThemeButton) {
+function ThemeButton({ isDark, setTheme, theme }: IThemeButton) {
   const [isOpenTheme, setIsOpenTheme] = useState(false);
-  const [isDelay, setIsDelay] = useState(false);
-  const toggleArrowClick = () => {
-    setIsOpenTheme(!isOpenTheme);
-    if (isDelay) {
-      setTimeout(() => setIsDelay(!isDelay), 500);
-    } else {
-      setIsDelay(!isDelay);
+  const [throttle, setThrottle] = useState(false);
+  const clickedToggleArrow = () => {
+    if (throttle) return;
+    if (!throttle) {
+      setThrottle(true);
+      setIsOpenTheme(!isOpenTheme);
+      setTimeout(() => setThrottle(false), 500);
     }
   };
-
+  const clickedThemeElement = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const selectColor = target.attributes[0].nodeValue;
+    setTheme((prev: ITheme): ITheme => {
+      return { ...prev, boardColor: selectColor || "" };
+    });
+  };
   return (
     <Wrapper $isDark={isDark}>
       <ButtonWrapper>
-        <Theme $isDark={isDark} onClick={toggleArrowClick}>
+        <Theme $isDark={isDark} onClick={clickedToggleArrow}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -106,20 +116,18 @@ function ThemeButton({ isDark }: IThemeButton) {
             />
           </svg>
         </Theme>
-        {isDelay && (
+        {(!isOpenTheme && !throttle) || (
           <Themes $isOpen={isOpenTheme}>
-            <Theme $isDark={isDark}>
-              <ThemeElement />
-            </Theme>
-            <Theme $isDark={isDark}>
-              <ThemeElement />
-            </Theme>
-            <Theme $isDark={isDark}>
-              <ThemeElement />
-            </Theme>
-            <Theme $isDark={isDark}>
-              <ThemeElement />
-            </Theme>
+            {colors.map((color) => (
+              <Theme $isDark={isDark}>
+                <ThemeElement
+                  key={color}
+                  color={color}
+                  theme={theme}
+                  onClick={clickedThemeElement}
+                />
+              </Theme>
+            ))}
           </Themes>
         )}
       </ButtonWrapper>

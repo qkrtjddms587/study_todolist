@@ -20,9 +20,6 @@ const Category = styled.div<{ $isDark: boolean }>`
   border-radius: 0.7rem;
   background-color: ${(props) => props.theme.boardColor};
   box-shadow: 3px 3px 1px 1px ${(props) => props.theme.shadowColor};
-  border: 1px solid
-    ${(props) =>
-      props.$isDark ? props.theme.bgColor.dark : props.theme.bgColor.light};
   transition: all 0.1s linear;
   &:active {
     transform: translate(3px, 3px);
